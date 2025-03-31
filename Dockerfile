@@ -1,7 +1,12 @@
 FROM eclipse-temurin:21-jre-alpine
 
-# Install wget
-RUN apk add --no-cache wget
+# Install required packages
+RUN apk add --no-cache \
+    wget \
+    udev \
+    ttf-dejavu \
+    fontconfig \
+    libstdc++
 
 # Create minecraft user
 RUN addgroup -S minecraft && adduser -S minecraft -G minecraft
