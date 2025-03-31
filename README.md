@@ -1,61 +1,100 @@
-# Minecraft Server Installation Script
+# Minecraft Server Docker Deployment
 
-This script automates the installation and setup of a Minecraft server on Linux systems.
+This repository contains Docker configuration for running a Minecraft server.
 
 ## Prerequisites
 
-- Linux operating system (tested on Ubuntu/Debian)
-- Internet connection
-- Sudo privileges
+- Docker
+- Docker Compose
 
-## Installation
+## Quick Start
 
-1. Clone this repository or download the `install_minecraft_server.sh` script
-2. Make the script executable:
-   ```bash
-   chmod +x install_minecraft_server.sh
-   ```
-3. Run the script with sudo:
-   ```bash
-   sudo ./install_minecraft_server.sh
-   ```
+1. Clone this repository:
+```bash
+git clone <your-repo-url>
+cd minecraft-deploy
+```
 
-## What the Script Does
+2. Make the setup script executable and run it:
+```bash
+chmod +x setup.sh
+./setup.sh
+```
 
-- Installs Java 17 if not already installed
-- Creates a directory at `/opt/minecraft` for the server
-- Downloads the latest Minecraft server JAR file
-- Creates necessary configuration files:
-  - `eula.txt` (automatically accepts the EULA)
-  - `server.properties` with default settings
-  - `start.sh` script to run the server
+The setup script will:
+- Check for required dependencies
+- Create necessary directories
+- Configure the server
+- Start the Minecraft server
+- Configure firewall rules (if UFW is present)
 
-## Starting the Server
+## Manual Setup
 
-1. Navigate to the Minecraft server directory:
-   ```bash
-   cd /opt/minecraft
-   ```
-2. Run the start script:
-   ```bash
-   ./start.sh
-   ```
+If you prefer to set up manually:
+
+1. Start the server:
+```bash
+docker-compose up -d
+```
+
+2. View the logs:
+```bash
+docker-compose logs -f
+```
+
+## Server Management
+
+- Start the server: `docker-compose up -d`
+- Stop the server: `docker-compose down`
+- Restart the server: `docker-compose restart`
+- View logs: `docker-compose logs -f`
+- Access server console: `docker-compose exec minecraft sh`
 
 ## Server Configuration
 
-You can modify the server settings by editing the `server.properties` file in the Minecraft server directory. Common settings include:
+The server configuration is stored in `./minecraft_data/server.properties`. You can modify this file to change server settings.
 
-- `server-port`: The port the server runs on (default: 25565)
-- `gamemode`: The default game mode (survival, creative, adventure, spectator)
-- `difficulty`: The game difficulty (peaceful, easy, normal, hard)
-- `max-players`: Maximum number of players allowed
-- `motd`: Message of the day (displayed in the server list)
+## Data Persistence
 
-## Notes
+All server data is stored in the `./minecraft_data` directory. This includes:
+- World data
+- Server configuration
+- Player data
+- Plugins (if added)
 
-- The server requires at least 1GB of RAM to run
-- The script allocates 2GB maximum RAM to the server
-- Make sure your firewall allows connections on port 25565
-- The server runs in survival mode by default
-- PvP is enabled by default
-- Online mode is enabled (requires valid Minecraft accounts) 
+## Port
+
+The server runs on port 25565 by default. You can change this in the `docker-compose.yml` file if needed.
+
+## Resource Limits
+
+The server is configured with:
+- Minimum RAM: 1GB
+- Maximum RAM: 2GB
+
+You can modify these limits in the Dockerfile if needed.
+
+## Troubleshooting
+
+If you encounter any issues:
+
+1. Check the logs:
+```bash
+docker-compose logs -f
+```
+
+2. Verify Docker is running:
+```bash
+systemctl status docker
+```
+
+3. Check container status:
+```bash
+docker ps
+```
+
+4. If needed, you can rebuild the container:
+```bash
+docker-compose down
+docker-compose up -d --build
+``` 
