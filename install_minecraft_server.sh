@@ -33,7 +33,7 @@ cd "$MINECRAFT_DIR"
 
 # Download Minecraft server
 echo -e "${YELLOW}Downloading Minecraft server...${NC}"
-wget https://piston-data.mojang.com/v1/objects/8dd1a28015f51b1803213892b50b7b4fc76e594d/server.jar -O minecraft_server.jar
+wget https://piston-data.mojang.com/v1/objects/e6ec2f64e6080b9b5d9b471b291c33cc7f509733/server.jar -O minecraft_server.jar
 
 # Create eula.txt
 echo "eula=true" > eula.txt
