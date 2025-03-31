@@ -15,11 +15,16 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Install Java if not present
-if ! command -v java &> /dev/null; then
-    echo -e "${YELLOW}Installing Java...${NC}"
+# Install Java 21 if not present
+if ! command -v java &> /dev/null || ! java -version 2>&1 | grep -q "version \"21"; then
+    echo -e "${YELLOW}Installing Java 21...${NC}"
     apt-get update
-    apt-get install -y openjdk-17-jre-headless
+    apt-get install -y wget apt-transport-https
+    mkdir -p /etc/apt/keyrings
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+    apt-get update
+    apt-get install -y temurin-21-jre-headless
 fi
 
 # Create Minecraft server directory
