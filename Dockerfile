@@ -7,7 +7,9 @@ RUN apk add --no-cache wget
 RUN addgroup -S minecraft && adduser -S minecraft -G minecraft
 
 # Create server directory and world directory
-RUN mkdir -p /minecraft/world && chown -R minecraft:minecraft /minecraft
+RUN mkdir -p /minecraft/world && \
+    chown -R minecraft:minecraft /minecraft && \
+    chmod -R 777 /minecraft
 
 # Switch to minecraft user
 USER minecraft
