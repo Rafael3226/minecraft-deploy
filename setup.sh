@@ -12,16 +12,59 @@ echo "----------------------------------------"
 # Function to check if a command exists
 check_command() {
     if ! command -v $1 &> /dev/null; then
-        echo -e "${RED}Error: $1 is not installed${NC}"
-        echo -e "Please install $1 and try again"
-        exit 1
+        echo -e "${YELLOW}$1 is not installed. Installing...${NC}"
+        return 1
     fi
+    return 0
 }
 
-# Check prerequisites
-echo -e "${YELLOW}Checking prerequisites...${NC}"
-check_command docker
-check_command docker-compose
+# Install Docker if not present
+if check_command docker; then
+    echo -e "${GREEN}Docker is already installed${NC}"
+else
+    echo -e "${YELLOW}Installing Docker...${NC}"
+    
+    # Remove any old versions
+    sudo apt-get remove docker docker-engine docker.io containerd runc
+    
+    # Install prerequisites
+    sudo apt-get update
+    sudo apt-get install -y \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg \
+        lsb-release
+
+    # Add Docker's official GPG key
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+    # Set up the stable repository
+    echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+        $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    # Install Docker Engine
+    sudo apt-get update
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+    # Add current user to docker group
+    sudo usermod -aG docker $USER
+    echo -e "${YELLOW}Please log out and back in for group changes to take effect${NC}"
+fi
+
+# Install Docker Compose if not present
+if check_command docker-compose; then
+    echo -e "${GREEN}Docker Compose is already installed${NC}"
+else
+    echo -e "${YELLOW}Installing Docker Compose...${NC}"
+    
+    # Download Docker Compose
+    sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    
+    # Make it executable
+    sudo chmod +x /usr/local/bin/docker-compose
+fi
 
 # Check Docker service
 if ! systemctl is-active --quiet docker; then
@@ -44,7 +87,7 @@ server-port=25565
 gamemode=survival
 difficulty=normal
 pvp=true
-online-mode=true
+online-mode=false
 max-players=20
 view-distance=10
 spawn-protection=16
