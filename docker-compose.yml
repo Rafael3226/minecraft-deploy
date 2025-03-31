@@ -7,9 +7,11 @@ services:
     ports:
       - "25565:25565"
     volumes:
-      - ./minecraft_data:/minecraft
+      - ./minecraft_data/world:/minecraft/world
     environment:
       - TZ=UTC
     restart: unless-stopped
     tty: true
     stdin_open: true
+    user: minecraft
+    working_dir: /minecraft
